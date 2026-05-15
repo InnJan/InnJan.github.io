@@ -1020,18 +1020,23 @@ function mailFromForm(e){
   e.preventDefault();
 
   const data = new FormData(e.currentTarget);
+
   const name = data.get("name") || "";
   const subjectText = data.get("subject") || "摄影作品集联系";
   const messageText = data.get("message") || "";
 
   const email = "ggft1285@gmail.com";
 
-  const subject = encodeURIComponent(subjectText);
-  const body = encodeURIComponent(
-    `你好，我是${name}。\n\n${messageText}\n\n—— 由 Inn Jan Photography 网页生成`
-  );
+  const mailtoLink =
+    "mailto:" + email +
+    "?subject=" + encodeURIComponent(subjectText) +
+    "&body=" + encodeURIComponent(
+      "你好，我是" + name + "。\n\n" +
+      messageText +
+      "\n\n—— 由 Inn Jan Photography 网页生成"
+    );
 
-  window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+  window.location.href = mailtoLink;
 }
 
 function bindEvents(){
