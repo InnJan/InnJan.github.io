@@ -782,6 +782,8 @@ html[data-theme="light"] .formgrid input, html[data-theme="light"] .formgrid tex
   </div>
 </div>
 
+<audio id="bgMusic" src="music.mp3" preload="auto" loop></audio>
+
 <script>
 const works = [
   {
@@ -899,9 +901,9 @@ const $$ = (s, root=document) => [...root.querySelectorAll(s)];
 
 let activeCategory = "全部";
 let currentIndex = 0;
-let audioCtx = null;
-let musicNodes = [];
 let musicOn = false;
+const bgMusic = document.getElementById("bgMusic");
+bgMusic.volume = 0.45;
 
 const categories = ["全部", ...new Set(works.map(w => w.category))];
 
@@ -981,58 +983,23 @@ function toggleTheme(){
   $("#themeBtn").textContent = next === "dark" ? "☾" : "☀";
 }
 
-function startMusic(){
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const master = audioCtx.createGain();
-  const filter = audioCtx.createBiquadFilter();
-  filter.type = "lowpass";
-  filter.frequency.value = 850;
-  master.gain.value = 0.035;
-  filter.connect(master);
-  master.connect(audioCtx.destination);
+async function toggleMusic(){
+  const btn = $("#musicBtn");
 
-  const notes = [110, 146.83, 164.81, 196, 220, 246.94];
-  notes.slice(0,4).forEach((freq, i) => {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = i % 2 ? "triangle" : "sine";
-    osc.frequency.value = freq;
-    gain.gain.value = 0.16 / (i + 1);
-    osc.connect(gain);
-    gain.connect(filter);
-    osc.start();
-    musicNodes.push(osc, gain);
-  });
-
-  const lfo = audioCtx.createOscillator();
-  const lfoGain = audioCtx.createGain();
-  lfo.frequency.value = 0.055;
-  lfoGain.gain.value = 0.018;
-  lfo.connect(lfoGain);
-  lfoGain.connect(master.gain);
-  lfo.start();
-  musicNodes.push(lfo, lfoGain, filter, master);
-}
-function stopMusic(){
-  musicNodes.forEach(n => {
-    try{ if(n.stop) n.stop(); }catch(e){}
-    try{ if(n.disconnect) n.disconnect(); }catch(e){}
-  });
-  musicNodes = [];
-  if(audioCtx){ audioCtx.close(); audioCtx = null; }
-}
-
-function toggleMusic(){
-  if(!musicOn){
-    startMusic();
-    musicOn = true;
-    $("#musicBtn").textContent = "■";
-    $("#musicBtn").title = "关闭背景音乐";
-  } else {
-    stopMusic();
-    musicOn = false;
-    $("#musicBtn").textContent = "♫";
-    $("#musicBtn").title = "开启背景音乐";
+  try {
+    if (!musicOn) {
+      await bgMusic.play();
+      musicOn = true;
+      btn.textContent = "■";
+      btn.title = "关闭背景音乐";
+    } else {
+      bgMusic.pause();
+      musicOn = false;
+      btn.textContent = "♫";
+      btn.title = "开启背景音乐";
+    }
+  } catch (err) {
+    alert("浏览器阻止了自动播放，请再点击一次音乐按钮。");
   }
 }
 
