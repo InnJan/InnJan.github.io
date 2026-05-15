@@ -782,7 +782,7 @@ html[data-theme="light"] .formgrid input, html[data-theme="light"] .formgrid tex
   </div>
 </div>
 
-<audio id="bgMusic" src="music.mp3" preload="auto" loop></audio>
+<audio id="bgMusic" src="./music.mp3" preload="metadata" loop playsinline></audio>
 
 <script>
 const works = [
@@ -986,20 +986,33 @@ function toggleTheme(){
 async function toggleMusic(){
   const btn = $("#musicBtn");
 
+  if (!bgMusic) return;
+
   try {
     if (!musicOn) {
+      bgMusic.muted = false;
+      bgMusic.currentTime = bgMusic.currentTime || 0;
       await bgMusic.play();
+
       musicOn = true;
       btn.textContent = "■";
       btn.title = "关闭背景音乐";
+      btn.classList.add("playing");
     } else {
       bgMusic.pause();
+
       musicOn = false;
       btn.textContent = "♫";
       btn.title = "开启背景音乐";
+      btn.classList.remove("playing");
     }
   } catch (err) {
-    alert("浏览器阻止了自动播放，请再点击一次音乐按钮。");
+    musicOn = false;
+    btn.textContent = "♫";
+    btn.title = "点击播放背景音乐";
+    btn.classList.remove("playing");
+
+    console.log("Music play blocked:", err);
   }
 }
 
