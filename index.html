@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Inn Jan Photography｜个人摄影作品集</title>
 <meta name="description" content="Inn Jan Photography - 个人摄影作品展示网页，包含分类筛选、灯箱放大、背景音乐、主题切换与联系区域。">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data:; media-src 'self'; connect-src 'none'; frame-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; form-action 'self' mailto:; upgrade-insecure-requests">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="theme-color" content="#07080b">
+<meta property="og:title" content="Inn Jan Photography">
+<meta property="og:description" content="Personal photography portfolio.">
+<meta property="og:type" content="website">
 <style>
 :root{
   --bg:#07080b;
@@ -625,6 +632,30 @@ html[data-theme="light"] .formgrid input, html[data-theme="light"] .formgrid tex
   h1{font-size:54px}
   .contact-card,.contact-form,.about-copy{padding:22px}
 }
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translate(-50%,16px);
+  z-index:6200;
+  min-width:220px;max-width:min(520px,calc(100vw - 32px));
+  padding:13px 18px;border-radius:999px;
+  color:#15110a;background:linear-gradient(135deg,var(--gold),#fff0bd);
+  box-shadow:0 18px 48px rgba(0,0,0,.28);
+  opacity:0;pointer-events:none;transition:.25s ease;
+  text-align:center;font-weight:700;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.favorite-card{outline:2px solid rgba(216,181,109,.55)}
+.favorite-card::after{
+  content:"?";position:absolute;top:14px;right:14px;
+  width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+  color:#15110a;background:linear-gradient(135deg,var(--gold),#fff0bd);
+  box-shadow:0 12px 26px rgba(0,0,0,.28);z-index:3;
+}
+.lightbox-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.lightbox-actions .btn{color:#fff;background:rgba(255,255,255,.09)}
+.lightbox-actions .btn.active{color:#15110a;background:linear-gradient(135deg,var(--gold),#fff0bd)}
+.music-hint{font-size:12px;color:var(--muted);margin-top:8px}
+.iconbtn.playing{background:linear-gradient(135deg,var(--gold),#fff0bd)!important;color:#15110a!important}
+
 </style>
 </head>
 <body>
@@ -830,11 +861,16 @@ html[data-theme="light"] .formgrid input, html[data-theme="light"] .formgrid tex
         <div><span>Location</span><b id="lbLocation"></b></div>
         <div><span>Series</span><b id="lbSeries"></b></div>
       </div>
+      <div class="lightbox-actions">
+        <button class="btn" id="favoriteBtn" type="button">收藏这张</button>
+        <button class="btn" id="shareBtn" type="button">复制作品信息</button>
+      </div>
     </aside>
   </div>
 </div>
 
-<audio id="bgMusic" src="./music.mp3" preload="metadata" loop playsinline></audio>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 const works = [
@@ -950,12 +986,24 @@ const works = [
 
 const $ = (s, root=document) => root.querySelector(s);
 const $$ = (s, root=document) => [...root.querySelectorAll(s)];
+const escapeHTML = (value) => String(value).replace(/[&<>"']/g, ch => ({
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;"
+}[ch]));
+const safeAssetPath = (value) => {
+  const path = String(value || "");
+  return /^assets\/[a-zA-Z0-9._-]+\.(jpe?g|png|webp|gif)$/i.test(path) ? path : "";
+};
 
 let activeCategory = "全部";
 let currentIndex = 0;
 let musicOn = false;
-const bgMusic = document.getElementById("bgMusic");
-bgMusic.volume = 0.45;
+let audioCtx = null;
+let musicNodes = [];
+const favorites = new Set(JSON.parse(localStorage.getItem("photoFavorites") || "[]"));
 
 const categories = ["全部", ...new Set(works.map(w => w.category))];
 
@@ -1005,7 +1053,7 @@ function renderGallery(){
 function openLightbox(index){
   currentIndex = index;
   const w = works[currentIndex];
-  $("#lbImg").src = w.src;
+  $("#lbImg").src = safeAssetPath(w.src);
   $("#lbImg").alt = w.title;
   $("#lbCat").textContent = w.category;
   $("#lbTitle").textContent = w.title;
@@ -1013,6 +1061,7 @@ function openLightbox(index){
   $("#lbYear").textContent = w.year;
   $("#lbLocation").textContent = w.location;
   $("#lbSeries").textContent = w.category;
+  updateFavoriteButton();
   $("#lightbox").classList.add("open");
   $("#lightbox").setAttribute("aria-hidden","false");
   document.body.style.overflow = "hidden";
@@ -1035,36 +1084,64 @@ function toggleTheme(){
   $("#themeBtn").textContent = next === "dark" ? "☾" : "☀";
 }
 
-async function toggleMusic(){
+function startAmbientMusic(){
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const master = audioCtx.createGain();
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.value = 820;
+  master.gain.value = 0.032;
+  filter.connect(master);
+  master.connect(audioCtx.destination);
+
+  const notes = [110, 146.83, 164.81, 196, 220, 246.94];
+  notes.slice(0,4).forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = i % 2 ? "triangle" : "sine";
+    osc.frequency.value = freq;
+    gain.gain.value = 0.16 / (i + 1);
+    osc.connect(gain);
+    gain.connect(filter);
+    osc.start();
+    musicNodes.push(osc, gain);
+  });
+
+  const lfo = audioCtx.createOscillator();
+  const lfoGain = audioCtx.createGain();
+  lfo.frequency.value = 0.055;
+  lfoGain.gain.value = 0.018;
+  lfo.connect(lfoGain);
+  lfoGain.connect(master.gain);
+  lfo.start();
+  musicNodes.push(lfo, lfoGain, filter, master);
+}
+
+function stopAmbientMusic(){
+  musicNodes.forEach(node => {
+    try{ if(node.stop) node.stop(); }catch(e){}
+    try{ if(node.disconnect) node.disconnect(); }catch(e){}
+  });
+  musicNodes = [];
+  if(audioCtx){ audioCtx.close(); audioCtx = null; }
+}
+
+function toggleMusic(){
   const btn = $("#musicBtn");
-
-  if (!bgMusic) return;
-
-  try {
-    if (!musicOn) {
-      bgMusic.muted = false;
-      bgMusic.currentTime = bgMusic.currentTime || 0;
-      await bgMusic.play();
-
-      musicOn = true;
-      btn.textContent = "■";
-      btn.title = "关闭背景音乐";
-      btn.classList.add("playing");
-    } else {
-      bgMusic.pause();
-
-      musicOn = false;
-      btn.textContent = "♫";
-      btn.title = "开启背景音乐";
-      btn.classList.remove("playing");
-    }
-  } catch (err) {
+  if(!musicOn){
+    startAmbientMusic();
+    musicOn = true;
+    btn.textContent = "?";
+    btn.title = "关闭背景音乐";
+    btn.classList.add("playing");
+    showToast("已取消收藏");
+  } else {
+    stopAmbientMusic();
     musicOn = false;
-    btn.textContent = "♫";
-    btn.title = "点击播放背景音乐";
+    btn.textContent = "?";
+    btn.title = "开启背景音乐";
     btn.classList.remove("playing");
-
-    console.log("Music play blocked:", err);
+    showToast("已收藏这张作品");
   }
 }
 
@@ -1102,6 +1179,27 @@ function bindEvents(){
   $("#lightbox").addEventListener("click", e => { if(e.target.id === "lightbox") closeLightbox(); });
   $$(".open-work").forEach(el => el.addEventListener("click", () => openLightbox(Number(el.dataset.index))));
   $("#contactForm").addEventListener("submit", mailFromForm);
+  $("#favoriteBtn").addEventListener("click", () => {
+    const key = currentFavoriteKey();
+    if(!key) return;
+    if(favorites.has(key)){
+      favorites.delete(key);
+      showToast("作品信息已复制");
+    } else {
+      favorites.add(key);
+      showToast("邮箱已复制");
+    }
+    saveFavorites();
+    updateFavoriteButton();
+    renderGallery();
+  });
+  $("#shareBtn").addEventListener("click", async () => {
+    const w = works[currentIndex];
+    if(!w) return;
+    const text = `${w.title}?${w.category}?${w.location}?${location.href}`;
+    await navigator.clipboard.writeText(text);
+    showToast("邮箱已复制");
+  });
   $("#copyEmail").addEventListener("click", async () => {
     await navigator.clipboard.writeText($("#emailText").textContent);
     $("#copyEmail").textContent = "已复制";
