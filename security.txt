@@ -1,0 +1,5 @@
+Contact: mailto:innjang@163.com
+Preferred-Languages: zh, en
+Canonical: https://yinjinghang.com/.well-known/security.txt
+Policy: https://yinjinghang.com/
+Expires: 2027-05-17T00:00:00Z
