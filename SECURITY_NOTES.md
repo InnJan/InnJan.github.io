@@ -10,6 +10,9 @@ Implemented:
 - Escaped gallery HTML output before writing it through `innerHTML`.
 - Restricted gallery image paths to local `assets/*` image files.
 - Added lazy image decoding/referrer controls.
+- The converter processes Office, PDF, ZIP, image, audio, and video files entirely in the browser; no user file is uploaded.
+- ZIP extraction limits file count and expanded size to reduce archive-bomb and memory-exhaustion risk.
+- The only permitted same-origin connection is used to load the locally bundled video-compression WebAssembly engine.
 
 Recommended GitHub Pages settings:
 
