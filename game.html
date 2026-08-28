@@ -31,6 +31,7 @@ body{
   color:var(--ink);
   background:var(--paper);
   font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Segoe UI",sans-serif;
+  font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
   overflow-x:hidden;
 }
 button,a{font:inherit;color:inherit}
@@ -58,7 +59,7 @@ button{-webkit-tap-highlight-color:transparent}
   display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr);gap:8vw;align-items:end;
 }
 .overline{margin:0 0 24px;font-size:10px;letter-spacing:.27em;text-transform:uppercase;color:var(--muted)}
-h1{margin:0;font-family:"Songti SC","STSong","Noto Serif CJK SC","Source Han Serif SC",Georgia,serif;font-size:clamp(64px,10vw,142px);font-weight:400;letter-spacing:-.075em;line-height:.79}
+h1{margin:0;font-family:"Songti SC","STSong","Noto Serif CJK SC","Source Han Serif SC",Georgia,serif;font-size:clamp(64px,10vw,142px);font-weight:400;letter-spacing:-.052em;line-height:.84}
 h1 em{display:block;margin-left:.62em;color:var(--red);font-weight:400;font-style:normal}
 .intro{border-top:1px solid var(--line);padding-top:21px}
 .intro p{margin:0;color:var(--muted);font-size:14px;line-height:1.85}
@@ -137,14 +138,17 @@ h1 em{display:block;margin-left:.62em;color:var(--red);font-weight:400;font-styl
   .nav{height:68px;width:calc(100% - 28px)}
   .back{font-size:9px}
   .masthead{width:calc(100% - 32px);padding:52px 0 42px;display:block}
-  h1{font-size:clamp(58px,18vw,84px);line-height:.88;letter-spacing:-.04em}
+  h1{font-size:clamp(56px,17vw,80px);line-height:.92;letter-spacing:-.02em}
   .intro{margin-top:42px}
+  .intro p{font-size:15px;line-height:1.82}
   .scorebar{width:calc(100% - 32px);min-height:84px;grid-template-columns:repeat(3,1fr);gap:10px}
   .scorebar>p{display:none}
   .measure strong{font-size:25px}
   .stage{height:72vh;min-height:540px}
   .target{width:82px;height:82px;margin:-41px 0 0 -41px}
-  .panel h2{font-size:clamp(44px,13vw,56px);line-height:.96;letter-spacing:-.03em}
+  .panel h2{font-size:clamp(42px,12vw,54px);line-height:1;letter-spacing:-.015em}
+  .panel .copy{font-size:14px;line-height:1.78}
+  .hint{font-size:10px;letter-spacing:.1em}
   .stage-note.right{display:none}
   .manifesto{width:calc(100% - 32px);padding:58px 0 64px;display:block}
   .manifesto blockquote{margin-top:30px}

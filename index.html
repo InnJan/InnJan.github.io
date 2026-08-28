@@ -35,6 +35,10 @@ body{
   color:var(--text);
   background:var(--bg);
   font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Segoe UI",sans-serif;
+  font-synthesis:none;
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
   overflow-x:hidden;
 }
 body::before{
@@ -151,13 +155,13 @@ h1{
   margin:24px 0 16px;
   max-width:880px;
   font-size:clamp(60px,10vw,132px);
-  line-height:.86;
-  letter-spacing:-.078em;
+  line-height:.9;
+  letter-spacing:-.058em;
   font-weight:820;
 }
 h1 em{
   display:block;
-  font-family:Georgia,"Times New Roman",serif;
+  font-family:"Iowan Old Style",Baskerville,"Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
   font-style:italic;
   font-weight:400;
   color:var(--gold2);
@@ -245,8 +249,9 @@ h1 em{
 .entry h2{
   margin:10px 0 10px;
   font-size:clamp(30px,4vw,48px);
-  line-height:1;
-  letter-spacing:-.055em;
+  line-height:1.06;
+  letter-spacing:-.035em;
+  text-wrap:balance;
 }
 .entry p{
   margin:0 0 22px;
@@ -319,6 +324,16 @@ h1 em{
 }
 .calc-entry h2{font-family:Georgia,"Times New Roman",serif;font-weight:400}
 .calc-entry .entry-content{position:relative;z-index:1}
+.filter-entry{min-height:245px;background:#a93f31;color:#f5ead8}
+.filter-entry::before{
+  background:
+    linear-gradient(90deg,transparent 49.7%,rgba(245,234,216,.34) 50%,transparent 50.3%),
+    radial-gradient(circle at 79% 32%,rgba(245,219,160,.48) 0 5%,transparent 5.3%),
+    radial-gradient(circle at 79% 32%,transparent 0 18%,rgba(245,234,216,.25) 18.3% 18.7%,transparent 19%),
+    linear-gradient(145deg,#bc4a38,#762820);
+}
+.filter-entry::after{opacity:1;background:linear-gradient(90deg,rgba(19,35,29,.18),transparent 46%),radial-gradient(circle at 23% 112%,rgba(23,41,34,.45) 0 34%,transparent 34.5%)}
+.filter-entry:hover::before{filter:none}.filter-entry small{color:#f1d797}.filter-entry h2{font-family:"Songti SC","STSong","Noto Serif CJK SC",Georgia,serif;font-weight:400}.filter-entry p{color:rgba(255,245,226,.72)}.filter-entry .open{background:#f0dfbf;color:#311b16}
 .placeholder{
   margin-top:14px;
   border:1px dashed rgba(255,255,255,.18);
@@ -370,11 +385,13 @@ h1 em{
 @media (max-width:560px){
   .nav small{display:none}
   .hero{padding:106px 16px 36px}
-  h1{font-size:56px;line-height:.92;letter-spacing:-.045em}
-  h1 em{font-style:normal;letter-spacing:-.035em}
+  h1{font-size:clamp(48px,15vw,56px);line-height:.96;letter-spacing:-.025em}
+  h1 em{font-style:normal;letter-spacing:-.02em}
   .dock{padding:12px;border-radius:28px}
   .entry{min-height:270px}
   .entry-content{padding:22px}
+  .entry h2{letter-spacing:-.02em;line-height:1.1}
+  .entry p{font-size:14px;line-height:1.75}
 }
 </style>
 </head>
@@ -403,7 +420,7 @@ h1 em{
     <section class="dock" aria-label="站点导航">
       <div class="dock-head">
         <p>Available now</p>
-        <strong>03</strong>
+        <strong>04</strong>
       </div>
       <div class="entry-grid">
         <a class="entry" href="photography.html" aria-label="进入 Inn Jan Photography">
@@ -428,6 +445,14 @@ h1 em{
             <h2>THE NUMERIC ORACLE</h2>
             <p>一台会回应数字的计算器。每个结果，都会展开为一幅动态几何构图。</p>
             <span class="open">开始计算 <span>→</span></span>
+          </div>
+        </a>
+        <a class="entry filter-entry" href="filter.html" aria-label="进入色温档案本地照片滤镜">
+          <div class="entry-content">
+            <small>Chromatic atelier · No. 03</small>
+            <h2>色温档案</h2>
+            <p>在本地暗房中收住颜色、托起情绪。上传照片，选择处方，导出自己的成片。</p>
+            <span class="open">进入暗房 <span>→</span></span>
           </div>
         </a>
       </div>

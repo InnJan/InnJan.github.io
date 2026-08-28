@@ -30,6 +30,7 @@ html{scroll-behavior:smooth}
 body{
   margin:0;min-height:100vh;color:var(--chalk);background:var(--black);
   font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Segoe UI",sans-serif;
+  font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
   overflow-x:hidden;
 }
 button,a{font:inherit;color:inherit}
@@ -54,7 +55,7 @@ a{text-decoration:none}
   display:grid;grid-template-columns:1fr auto;gap:5vw;align-items:end;
 }
 .overline{margin:0 0 22px;color:var(--gold);font-size:10px;letter-spacing:.26em;text-transform:uppercase}
-h1{margin:0;font-family:Georgia,"Songti SC","STSong","Noto Serif CJK SC",serif;font-size:clamp(72px,11vw,158px);font-weight:400;line-height:.75;letter-spacing:-.075em}
+h1{margin:0;font-family:"Songti SC","STSong","Noto Serif CJK SC","Source Han Serif SC",Georgia,serif;font-size:clamp(72px,11vw,158px);font-weight:400;line-height:.82;letter-spacing:-.052em}
 h1 span{display:inline-block;color:var(--signal);transform:translateY(.13em)}
 .statement{max-width:390px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;line-height:1.85}
 .statement strong{display:block;margin-top:18px;color:var(--chalk);font-family:Georgia,"Songti SC",serif;font-size:20px;font-weight:400}
@@ -109,11 +110,11 @@ h1 span{display:inline-block;color:var(--signal);transform:translateY(.13em)}
 .history-head button{padding:0;border:0;background:none;color:inherit;cursor:pointer;font-size:8px;letter-spacing:.14em;text-transform:uppercase}
 .history-list{min-height:44px;display:flex;flex-wrap:wrap;gap:7px;align-content:flex-start}
 .history-item{border:1px solid rgba(18,23,20,.14);border-radius:999px;background:rgba(255,255,255,.32);padding:8px 11px;cursor:pointer;color:rgba(18,23,20,.68);font-size:11px}
-.history-empty{color:rgba(18,23,20,.34);font-family:Georgia,"Songti SC",serif;font-size:12px;font-style:normal}
+.history-empty{color:rgba(18,23,20,.34);font-family:"Songti SC","STSong","Noto Serif CJK SC",Georgia,serif;font-size:12px;font-style:normal}
 
 .notes{width:min(var(--max),calc(100% - 44px));margin:0 auto;padding:82px 0 94px;display:grid;grid-template-columns:.65fr 1.35fr;gap:8vw}
 .notes-label{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
-.notes blockquote{margin:0;font-family:Georgia,"Songti SC","STSong",serif;font-size:clamp(30px,4.4vw,64px);line-height:1.12;letter-spacing:-.045em}
+.notes blockquote{margin:0;font-family:"Songti SC","STSong","Noto Serif CJK SC","Source Han Serif SC",Georgia,serif;font-size:clamp(30px,4.4vw,64px);line-height:1.16;letter-spacing:-.032em}
 .notes blockquote em{color:var(--signal);font-style:normal;font-weight:400}
 .footer{border-top:1px solid var(--line);width:min(var(--max),calc(100% - 44px));min-height:112px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
 
@@ -124,12 +125,12 @@ h1 span{display:inline-block;color:var(--signal);transform:translateY(.13em)}
 @media (max-width:580px){
   .nav{width:calc(100% - 28px);height:68px}.back{font-size:9px}
   .masthead{width:calc(100% - 30px);padding:50px 0 38px}
-  h1{font-size:clamp(58px,19vw,90px);line-height:.84;letter-spacing:-.045em}
+  h1{font-size:clamp(56px,17vw,82px);line-height:.92;letter-spacing:-.02em}
   .statement{margin-top:34px;font-size:14px;line-height:1.72}
   .instrument-inner{width:calc(100% - 20px);padding:10px 0 28px;gap:10px}
   .calculator{padding:14px;border-radius:24px}.visual{min-height:500px;border-radius:24px}
   .display{min-height:132px;padding:15px 3px}.value{font-size:clamp(45px,15vw,64px)}.science{gap:5px}.science-key{min-height:37px;font-size:12px}
-  .keys{gap:7px}.key{min-height:61px;border-radius:17px;font-size:18px}.key.operator{font-size:23px}
+  .keys{gap:7px}.key{min-height:61px;border-radius:17px;font-size:19px}.key.operator{font-size:23px}.calc-head span{font-size:10px}.expression{font-size:15px}
   .history{margin-top:14px}.visual-caption{display:none}.visual-actions{left:13px;right:13px;bottom:13px;display:grid;grid-template-columns:1fr 1.35fr}.small-action{min-height:40px;padding:0 9px;font-size:8px}.process-state{left:17px;right:17px;top:50px}
   .notes{width:calc(100% - 30px);padding:58px 0 66px;display:block}.notes blockquote{margin-top:30px;font-size:31px;line-height:1.22;letter-spacing:-.02em}
   .footer{width:calc(100% - 30px);min-height:90px}
