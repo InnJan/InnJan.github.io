@@ -38,6 +38,7 @@ let pptViewer = null;
 let busy = false;
 let officeOutput = "direct";
 let ffmpegInstance = null;
+const FFMPEG_WASM_CDN = "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/esm/ffmpeg-core.wasm";
 const isTouchPhone = window.matchMedia("(max-width: 560px), (pointer: coarse)").matches;
 
 function setStatus(text, percent = 0) {
@@ -659,14 +660,26 @@ async function videoToTarget() {
   const duration = video.duration;
   URL.revokeObjectURL(url);
   if (!Number.isFinite(duration) || duration <= 0) throw new Error("无法读取视频时长");
-  setStatus("首次使用需加载本地视频引擎", 4);
+  setStatus("首次使用需联网加载视频引擎 · 约 31 MB", 4);
   if (!ffmpegInstance) {
     const { FFmpeg } = await import("./vendor/ffmpeg/ffmpeg/index.js");
     ffmpegInstance = new FFmpeg();
-    await ffmpegInstance.load({
-      coreURL: new URL("./vendor/ffmpeg/core/ffmpeg-core.js", location.href).href,
-      wasmURL: new URL("./vendor/ffmpeg/core/ffmpeg-core.wasm", location.href).href
-    });
+    let wasmBlobURL = "";
+    try {
+      const response = await fetch(FFMPEG_WASM_CDN, { mode: "cors", cache: "force-cache", credentials: "omit" });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      wasmBlobURL = URL.createObjectURL(new Blob([await response.arrayBuffer()], { type: "application/wasm" }));
+      await ffmpegInstance.load({
+        coreURL: new URL("./vendor/ffmpeg/core/ffmpeg-core.js", location.href).href,
+        wasmURL: wasmBlobURL
+      });
+    } catch (error) {
+      ffmpegInstance.terminate();
+      ffmpegInstance = null;
+      throw new Error("视频引擎下载失败，请检查网络后重试");
+    } finally {
+      if (wasmBlobURL) URL.revokeObjectURL(wasmBlobURL);
+    }
   }
   const inputExt = extension(currentFile) || "mp4";
   const inputName = `input.${inputExt}`;
