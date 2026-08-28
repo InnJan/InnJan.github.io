@@ -34,7 +34,7 @@ body{
   min-height:100vh;
   color:var(--text);
   background:var(--bg);
-  font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Segoe UI",sans-serif;
   overflow-x:hidden;
 }
 body::before{
@@ -293,10 +293,32 @@ h1 em{
 }
 .game-entry:hover::before{filter:none}
 .game-entry small{color:#596449}
-.game-entry h2{font-family:Georgia,"Times New Roman",serif;font-style:italic;font-weight:400}
+.game-entry h2{font-family:"Songti SC","STSong","Noto Serif CJK SC","Source Han Serif SC",Georgia,serif;font-style:normal;font-weight:400}
 .game-entry p{color:rgba(17,23,19,.65)}
 .game-entry .open{background:#182c25;color:#f3e8cc}
 .game-entry .open span{background:rgba(255,255,255,.12)}
+.calc-entry{
+  min-height:245px;
+  background:#101311;
+}
+.calc-entry::before{
+  background:
+    linear-gradient(112deg,transparent 0 49.8%,rgba(216,181,109,.28) 50%,transparent 50.2%),
+    radial-gradient(circle at 78% 22%,rgba(216,181,109,.22),transparent 24%),
+    linear-gradient(145deg,#18201c,#090b0a);
+}
+.calc-entry::after{
+  content:"∞";
+  inset:auto 26px -34px auto;
+  color:rgba(242,213,150,.17);
+  background:none;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:170px;
+  line-height:1;
+  opacity:1;
+}
+.calc-entry h2{font-family:Georgia,"Times New Roman",serif;font-weight:400}
+.calc-entry .entry-content{position:relative;z-index:1}
 .placeholder{
   margin-top:14px;
   border:1px dashed rgba(255,255,255,.18);
@@ -348,7 +370,8 @@ h1 em{
 @media (max-width:560px){
   .nav small{display:none}
   .hero{padding:106px 16px 36px}
-  h1{font-size:62px}
+  h1{font-size:56px;line-height:.92;letter-spacing:-.045em}
+  h1 em{font-style:normal;letter-spacing:-.035em}
   .dock{padding:12px;border-radius:28px}
   .entry{min-height:270px}
   .entry-content{padding:22px}
@@ -380,7 +403,7 @@ h1 em{
     <section class="dock" aria-label="站点导航">
       <div class="dock-head">
         <p>Available now</p>
-        <strong>02</strong>
+        <strong>03</strong>
       </div>
       <div class="entry-grid">
         <a class="entry" href="photography.html" aria-label="进入 Inn Jan Photography">
@@ -397,6 +420,14 @@ h1 em{
             <h2>星尘谱</h2>
             <p>捕捉游移的光，亲手写下一幅仅属于此刻的抽象画。</p>
             <span class="open">开始创作 <span>→</span></span>
+          </div>
+        </a>
+        <a class="entry calc-entry" href="calculator.html" aria-label="进入数象仪艺术计算器">
+          <div class="entry-content">
+            <small>Functional artwork · No. 02</small>
+            <h2>THE NUMERIC ORACLE</h2>
+            <p>一台会回应数字的计算器。每个结果，都会展开为一幅动态几何构图。</p>
+            <span class="open">开始计算 <span>→</span></span>
           </div>
         </a>
       </div>

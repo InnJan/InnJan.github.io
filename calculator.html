@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>数象仪｜Inn Jan</title>
+<meta name="description" content="一台将计算结果转译成动态几何构图的艺术计算器。">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: blob:; media-src 'none'; connect-src 'none'; frame-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; upgrade-insecure-requests">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="theme-color" content="#0b0e0d">
+<meta property="og:title" content="数象仪｜Inn Jan">
+<meta property="og:description" content="计算不是答案的终点，而是图像的起点。">
+<meta property="og:type" content="website">
+<style>
+:root{
+  --black:#0b0e0d;
+  --ink:#121714;
+  --paper:#eee7da;
+  --chalk:#f4eddf;
+  --muted:rgba(244,237,223,.58);
+  --line:rgba(244,237,223,.18);
+  --signal:#ff714f;
+  --acid:#dfea78;
+  --gold:#d7b46a;
+  --max:1360px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;min-height:100vh;color:var(--chalk);background:var(--black);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Segoe UI",sans-serif;
+  overflow-x:hidden;
+}
+button,a{font:inherit;color:inherit}
+button{-webkit-tap-highlight-color:transparent}
+a{text-decoration:none}
+::selection{background:var(--signal);color:#fff}
+.grain{
+  position:fixed;inset:0;z-index:50;pointer-events:none;opacity:.08;mix-blend-mode:screen;
+  background:repeating-radial-gradient(circle at 64% 21%,rgba(255,255,255,.65) 0 1px,transparent 1px 5px);background-size:8px 8px;
+}
+.nav{
+  width:min(var(--max),calc(100% - 44px));height:84px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:12px;font-size:13px;font-weight:760;letter-spacing:.16em;text-transform:uppercase}
+.mark{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--gold);border-radius:50%;font-family:Georgia,serif;color:#f2d596;letter-spacing:0}
+.back{display:inline-flex;align-items:center;gap:9px;color:var(--muted);font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.back span{transition:transform .2s ease}.back:hover span{transform:translateX(-3px)}
+
+.masthead{
+  width:min(var(--max),calc(100% - 44px));margin:0 auto;padding:64px 0 50px;
+  display:grid;grid-template-columns:1fr auto;gap:5vw;align-items:end;
+}
+.overline{margin:0 0 22px;color:var(--gold);font-size:10px;letter-spacing:.26em;text-transform:uppercase}
+h1{margin:0;font-family:Georgia,"Songti SC","STSong","Noto Serif CJK SC",serif;font-size:clamp(72px,11vw,158px);font-weight:400;line-height:.75;letter-spacing:-.075em}
+h1 span{display:inline-block;color:var(--signal);transform:translateY(.13em)}
+.statement{max-width:390px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;line-height:1.85}
+.statement strong{display:block;margin-top:18px;color:var(--chalk);font-family:Georgia,"Songti SC",serif;font-size:20px;font-weight:400}
+
+.instrument{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.instrument-inner{
+  width:min(var(--max),calc(100% - 44px));margin:0 auto;padding:34px 0 48px;
+  display:grid;grid-template-columns:minmax(0,1.16fr) minmax(390px,.84fr);gap:22px;
+}
+.visual,.calculator{border:1px solid var(--line);border-radius:32px;overflow:hidden}
+.visual{position:relative;min-height:720px;background:#111714;isolation:isolate}
+.visual::after{content:"";position:absolute;inset:0;pointer-events:none;border:1px solid rgba(255,255,255,.05);border-radius:31px}
+#numberArt{position:absolute;inset:0;width:100%;height:100%}
+.visual-meta{position:absolute;z-index:3;left:25px;right:25px;top:23px;display:flex;justify-content:space-between;color:rgba(244,237,223,.42);font-size:8px;letter-spacing:.18em;text-transform:uppercase;pointer-events:none}
+.visual-caption{position:absolute;z-index:3;left:25px;bottom:23px;color:rgba(244,237,223,.42);font-size:8px;line-height:1.7;letter-spacing:.16em;text-transform:uppercase;pointer-events:none}
+.process-state{position:absolute;z-index:4;left:25px;right:25px;top:52px;display:flex;align-items:center;gap:13px;pointer-events:none}
+.process-state span{min-width:76px;color:rgba(244,237,223,.58);font-size:8px;letter-spacing:.17em;text-transform:uppercase}
+.process-track{height:1px;flex:1;background:rgba(244,237,223,.15);overflow:hidden}
+.process-track i{display:block;width:100%;height:100%;background:linear-gradient(90deg,var(--signal),var(--acid));transform:scaleX(0);transform-origin:left center;transition:transform .12s linear}
+.visual-actions{position:absolute;z-index:5;right:20px;bottom:20px;display:flex;gap:8px}
+.small-action{min-height:42px;padding:0 15px;border:1px solid rgba(244,237,223,.24);border-radius:999px;background:rgba(11,14,13,.78);color:rgba(244,237,223,.78);cursor:pointer;font-size:10px;letter-spacing:.1em;transition:background .2s ease,color .2s ease,opacity .2s ease}
+.small-action:hover{background:var(--chalk);color:var(--ink)}
+.small-action.record{border-color:rgba(255,113,79,.62);color:#ffd1c7}
+.small-action:disabled{cursor:not-allowed;opacity:.42}
+
+.calculator{background:var(--paper);color:var(--ink);padding:24px;display:flex;flex-direction:column}
+.calc-head{display:flex;justify-content:space-between;align-items:center;padding:4px 3px 18px;border-bottom:1px solid rgba(18,23,20,.18)}
+.calc-head span{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(18,23,20,.55)}
+.angle-mode{min-width:49px;height:27px;padding:0 9px;border:1px solid rgba(18,23,20,.18);border-radius:999px;background:transparent;color:rgba(18,23,20,.62);cursor:pointer;font-size:8px;letter-spacing:.12em}
+.display{min-height:176px;padding:24px 4px 20px;display:flex;flex-direction:column;align-items:flex-end;justify-content:flex-end;overflow:hidden}
+.expression{min-height:25px;max-width:100%;color:rgba(18,23,20,.46);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.value{max-width:100%;margin-top:8px;font-family:Georgia,"Times New Roman",serif;font-size:clamp(55px,6vw,82px);font-weight:400;line-height:.92;letter-spacing:-.055em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.science{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid rgba(18,23,20,.13)}
+.science-key{min-height:39px;padding:3px;border:1px solid rgba(18,23,20,.13);border-radius:12px;background:rgba(18,23,20,.045);color:rgba(18,23,20,.68);cursor:pointer;font-family:Georgia,"Times New Roman",serif;font-size:13px;transition:background .15s ease,transform .12s ease}
+.science-key:hover{background:rgba(255,255,255,.55)}.science-key:active{transform:scale(.95)}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.key{
+  position:relative;min-height:70px;border:1px solid rgba(18,23,20,.15);border-radius:20px;background:rgba(255,255,255,.34);
+  color:var(--ink);cursor:pointer;font-size:20px;transition:transform .12s ease,background .16s ease,border-color .16s ease;
+}
+.key:hover{background:#fff;border-color:rgba(18,23,20,.28)}
+.key:active,.key.active{transform:scale(.96);background:#d9d1c3}
+.key:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.key.function{font-size:15px;color:rgba(18,23,20,.62)}
+.key.operator{background:#19251f;color:var(--chalk);border-color:#19251f;font-family:Georgia,serif;font-size:26px}
+.key.operator:hover{background:#26392f}
+.key.equals{background:var(--signal);color:#fff;border-color:var(--signal);font-size:25px}
+.key.equals:hover{background:#e95f3e}
+.key.zero{grid-column:span 2;text-align:left;padding-left:30px}
+.history{margin-top:18px;padding:17px 3px 2px;border-top:1px solid rgba(18,23,20,.18)}
+.history-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:rgba(18,23,20,.5);font-size:8px;letter-spacing:.2em;text-transform:uppercase}
+.history-head button{padding:0;border:0;background:none;color:inherit;cursor:pointer;font-size:8px;letter-spacing:.14em;text-transform:uppercase}
+.history-list{min-height:44px;display:flex;flex-wrap:wrap;gap:7px;align-content:flex-start}
+.history-item{border:1px solid rgba(18,23,20,.14);border-radius:999px;background:rgba(255,255,255,.32);padding:8px 11px;cursor:pointer;color:rgba(18,23,20,.68);font-size:11px}
+.history-empty{color:rgba(18,23,20,.34);font-family:Georgia,"Songti SC",serif;font-size:12px;font-style:normal}
+
+.notes{width:min(var(--max),calc(100% - 44px));margin:0 auto;padding:82px 0 94px;display:grid;grid-template-columns:.65fr 1.35fr;gap:8vw}
+.notes-label{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.notes blockquote{margin:0;font-family:Georgia,"Songti SC","STSong",serif;font-size:clamp(30px,4.4vw,64px);line-height:1.12;letter-spacing:-.045em}
+.notes blockquote em{color:var(--signal);font-style:normal;font-weight:400}
+.footer{border-top:1px solid var(--line);width:min(var(--max),calc(100% - 44px));min-height:112px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+
+@media (max-width:920px){
+  .masthead{grid-template-columns:1fr}.statement{margin-top:42px}
+  .instrument-inner{grid-template-columns:1fr}.calculator{order:1}.visual{order:2;min-height:620px}
+}
+@media (max-width:580px){
+  .nav{width:calc(100% - 28px);height:68px}.back{font-size:9px}
+  .masthead{width:calc(100% - 30px);padding:50px 0 38px}
+  h1{font-size:clamp(58px,19vw,90px);line-height:.84;letter-spacing:-.045em}
+  .statement{margin-top:34px;font-size:14px;line-height:1.72}
+  .instrument-inner{width:calc(100% - 20px);padding:10px 0 28px;gap:10px}
+  .calculator{padding:14px;border-radius:24px}.visual{min-height:500px;border-radius:24px}
+  .display{min-height:132px;padding:15px 3px}.value{font-size:clamp(45px,15vw,64px)}.science{gap:5px}.science-key{min-height:37px;font-size:12px}
+  .keys{gap:7px}.key{min-height:61px;border-radius:17px;font-size:18px}.key.operator{font-size:23px}
+  .history{margin-top:14px}.visual-caption{display:none}.visual-actions{left:13px;right:13px;bottom:13px;display:grid;grid-template-columns:1fr 1.35fr}.small-action{min-height:40px;padding:0 9px;font-size:8px}.process-state{left:17px;right:17px;top:50px}
+  .notes{width:calc(100% - 30px);padding:58px 0 66px;display:block}.notes blockquote{margin-top:30px;font-size:31px;line-height:1.22;letter-spacing:-.02em}
+  .footer{width:calc(100% - 30px);min-height:90px}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<nav class="nav">
+  <a class="brand" href="index.html" aria-label="返回 Inn Jan 首页"><span class="mark">IJ</span><span>Inn Jan</span></a>
+  <a class="back" href="index.html"><span>←</span> 返回数字展厅</a>
+</nav>
+
+<header class="masthead">
+  <div>
+    <p class="overline">Functional artwork · No. 02 / 2026</p>
+    <h1>数<span>象</span>仪</h1>
+  </div>
+  <div class="statement">一个答案通常会结束问题。在这里，答案会开启一幅图像。<strong>Every result becomes a form.</strong></div>
+</header>
+
+<main>
+  <section class="instrument" aria-label="数象仪艺术计算器">
+    <div class="instrument-inner">
+      <div class="visual">
+        <canvas id="numberArt" aria-label="计算结果生成的动态几何构图">你的浏览器不支持画布，但计算器仍然可以正常使用。</canvas>
+        <div class="visual-meta"><span>Generative field / Live</span><span id="visualCode">FORM · 0000</span></div>
+        <div class="process-state"><span id="processLabel">等待演算</span><div class="process-track"><i id="processBar"></i></div></div>
+        <div class="visual-caption">Magnitude → Radius<br>Digits → Symmetry<br>Sign → Direction</div>
+        <div class="visual-actions">
+          <button class="small-action" id="replayButton" type="button">重播演算</button>
+          <button class="small-action record" id="recordButton" type="button">保存演算视频</button>
+        </div>
+      </div>
+
+      <div class="calculator" aria-label="计算器">
+        <div class="calc-head"><span>Scientific instrument</span><button class="angle-mode" id="angleMode" type="button" aria-label="切换角度单位">DEG</button></div>
+        <div class="display" aria-live="polite" aria-atomic="true">
+          <div class="expression" id="expression">准备计算</div>
+          <div class="value" id="display">0</div>
+        </div>
+        <div class="science" id="scienceKeys" aria-label="高级运算">
+          <button class="science-key" type="button" data-science="sin">sin</button>
+          <button class="science-key" type="button" data-science="cos">cos</button>
+          <button class="science-key" type="button" data-science="tan">tan</button>
+          <button class="science-key" type="button" data-science="ln">ln</button>
+          <button class="science-key" type="button" data-science="log">log</button>
+          <button class="science-key" type="button" data-science="sqrt">√x</button>
+          <button class="science-key" type="button" data-science="square">x²</button>
+          <button class="science-key" type="button" data-science="power">xʸ</button>
+          <button class="science-key" type="button" data-science="pi">π</button>
+          <button class="science-key" type="button" data-science="e">e</button>
+        </div>
+        <div class="keys" id="keys">
+          <button class="key function" type="button" data-action="clear">AC</button>
+          <button class="key function" type="button" data-action="sign">±</button>
+          <button class="key function" type="button" data-action="percent">%</button>
+          <button class="key operator" type="button" data-operator="÷" aria-label="除">÷</button>
+
+          <button class="key" type="button" data-digit="7">7</button>
+          <button class="key" type="button" data-digit="8">8</button>
+          <button class="key" type="button" data-digit="9">9</button>
+          <button class="key operator" type="button" data-operator="×" aria-label="乘">×</button>
+
+          <button class="key" type="button" data-digit="4">4</button>
+          <button class="key" type="button" data-digit="5">5</button>
+          <button class="key" type="button" data-digit="6">6</button>
+          <button class="key operator" type="button" data-operator="−" aria-label="减">−</button>
+
+          <button class="key" type="button" data-digit="1">1</button>
+          <button class="key" type="button" data-digit="2">2</button>
+          <button class="key" type="button" data-digit="3">3</button>
+          <button class="key operator" type="button" data-operator="+" aria-label="加">+</button>
+
+          <button class="key zero" type="button" data-digit="0">0</button>
+          <button class="key" type="button" data-action="decimal">.</button>
+          <button class="key equals" type="button" data-action="equals" aria-label="等于">=</button>
+        </div>
+        <div class="history">
+          <div class="history-head"><span>Recent results</span><button id="clearHistory" type="button">清空</button></div>
+          <div class="history-list" id="historyList"><span class="history-empty">计算痕迹将出现在这里</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="notes">
+    <span class="notes-label">Instrument note / 02</span>
+    <blockquote>数字不是冰冷的答案。换一个尺度，它们是<em>轨道、节奏与光。</em></blockquote>
+  </section>
+</main>
+
+<footer class="footer"><span>© 2026 Inn Jan</span><span>yinjinghang.com</span></footer>
+
+<script src="calculator.js"></script>
+</body>
+</html>
