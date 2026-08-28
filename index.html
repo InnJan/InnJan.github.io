@@ -198,6 +198,10 @@ h1 em{
   font-size:26px;
   font-weight:400;
 }
+.entry-grid{
+  display:grid;
+  gap:14px;
+}
 .entry{
   position:relative;
   display:grid;
@@ -269,6 +273,30 @@ h1 em{
   transition:transform .25s ease;
 }
 .entry:hover .open span{transform:translateX(3px)}
+.game-entry{
+  min-height:245px;
+  color:#111713;
+  background:#e7dfcf;
+}
+.game-entry::before{
+  background:
+    radial-gradient(circle at 74% 28%, rgba(255,255,255,.95) 0 3px, transparent 4px),
+    radial-gradient(circle at 68% 34%, rgba(216,181,109,.9) 0 7px, transparent 8px),
+    radial-gradient(circle at 18% 110%, #b8c3a1 0 31%, transparent 32%),
+    linear-gradient(145deg,#eee7da,#d9d0bf);
+}
+.game-entry::after{
+  opacity:1;
+  background:
+    linear-gradient(108deg,transparent 0 64%,rgba(26,44,37,.18) 64.2% 64.5%,transparent 64.7%),
+    radial-gradient(ellipse at 82% 80%,rgba(31,59,48,.2),transparent 34%);
+}
+.game-entry:hover::before{filter:none}
+.game-entry small{color:#596449}
+.game-entry h2{font-family:Georgia,"Times New Roman",serif;font-style:italic;font-weight:400}
+.game-entry p{color:rgba(17,23,19,.65)}
+.game-entry .open{background:#182c25;color:#f3e8cc}
+.game-entry .open span{background:rgba(255,255,255,.12)}
 .placeholder{
   margin-top:14px;
   border:1px dashed rgba(255,255,255,.18);
@@ -352,19 +380,25 @@ h1 em{
     <section class="dock" aria-label="站点导航">
       <div class="dock-head">
         <p>Available now</p>
-        <strong>01</strong>
+        <strong>02</strong>
       </div>
-      <a class="entry" href="photography.html" aria-label="进入 Inn Jan Photography">
-        <div class="entry-content">
-          <small>Portfolio</small>
-          <h2>INN JAN PHOTOGRAPHY</h2>
-          <p>个人摄影作品集。光影、校园、城市、园林与自然的视觉档案。</p>
-          <span class="open">进入栏目 <span>→</span></span>
-        </div>
-      </a>
-      <div class="placeholder">
-        <b>Reserved slots</b>
-        后续栏目策划中。
+      <div class="entry-grid">
+        <a class="entry" href="photography.html" aria-label="进入 Inn Jan Photography">
+          <div class="entry-content">
+            <small>Portfolio</small>
+            <h2>INN JAN PHOTOGRAPHY</h2>
+            <p>个人摄影作品集。光影、校园、城市、园林与自然的视觉档案。</p>
+            <span class="open">进入栏目 <span>→</span></span>
+          </div>
+        </a>
+        <a class="entry game-entry" href="game.html" aria-label="进入星尘谱艺术游戏">
+          <div class="entry-content">
+            <small>Interactive study · No. 01</small>
+            <h2>星尘谱</h2>
+            <p>捕捉游移的光，亲手写下一幅仅属于此刻的抽象画。</p>
+            <span class="open">开始创作 <span>→</span></span>
+          </div>
+        </a>
       </div>
     </section>
   </div>

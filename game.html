@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>星尘谱｜Inn Jan</title>
+<meta name="description" content="捕捉游移的光，在三十秒内写下一幅只属于此刻的抽象画。">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: blob:; media-src 'none'; connect-src 'none'; frame-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; upgrade-insecure-requests">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="theme-color" content="#172a22">
+<meta property="og:title" content="星尘谱｜Inn Jan">
+<meta property="og:description" content="一场关于光、速度与偶然的三十秒艺术游戏。">
+<meta property="og:type" content="website">
+<style>
+:root{
+  --paper:#e9e2d5;
+  --ink:#172a22;
+  --muted:#69736b;
+  --acid:#ddea7e;
+  --gold:#dbb86e;
+  --red:#ed7461;
+  --line:rgba(23,42,34,.24);
+  --max:1320px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  min-height:100vh;
+  color:var(--ink);
+  background:var(--paper);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;
+  overflow-x:hidden;
+}
+button,a{font:inherit;color:inherit}
+a{text-decoration:none}
+button{-webkit-tap-highlight-color:transparent}
+::selection{background:var(--acid);color:var(--ink)}
+.noise{
+  position:fixed;inset:0;z-index:30;pointer-events:none;opacity:.09;
+  background-image:repeating-radial-gradient(circle at 23% 37%,rgba(17,23,19,.55) 0 1px,transparent 1px 4px);
+  background-size:7px 7px;
+  mix-blend-mode:multiply;
+}
+.nav{
+  width:min(var(--max),calc(100% - 40px));height:82px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:12px;font-size:13px;font-weight:760;letter-spacing:.16em;text-transform:uppercase}
+.mark{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--ink);border-radius:50%;font-family:Georgia,serif;font-weight:400;letter-spacing:0}
+.back{display:inline-flex;align-items:center;gap:9px;color:var(--muted);font-size:11px;letter-spacing:.15em;text-transform:uppercase}
+.back span{transition:transform .2s ease}
+.back:hover span{transform:translateX(-3px)}
+
+.masthead{
+  width:min(var(--max),calc(100% - 40px));margin:0 auto;padding:70px 0 54px;
+  display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr);gap:8vw;align-items:end;
+}
+.overline{margin:0 0 24px;font-size:10px;letter-spacing:.27em;text-transform:uppercase;color:var(--muted)}
+h1{margin:0;font-family:Georgia,"Songti SC","Times New Roman",serif;font-size:clamp(64px,10vw,142px);font-weight:400;letter-spacing:-.075em;line-height:.79}
+h1 em{display:block;margin-left:.62em;color:var(--red);font-weight:400}
+.intro{border-top:1px solid var(--line);padding-top:21px}
+.intro p{margin:0;color:var(--muted);font-size:14px;line-height:1.85}
+.intro dl{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:28px 0 0}
+.intro dt{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.intro dd{margin:5px 0 0;font-family:Georgia,serif;font-size:20px}
+
+.game-shell{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.scorebar{
+  min-height:94px;width:min(var(--max),calc(100% - 40px));margin:0 auto;
+  display:grid;grid-template-columns:1fr repeat(3,minmax(90px,160px));align-items:center;gap:3vw;
+}
+.scorebar>p{margin:0;font-family:Georgia,"Songti SC",serif;font-style:italic;font-size:18px}
+.measure{display:flex;flex-direction:column}
+.measure span{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.measure strong{margin-top:4px;font-family:Georgia,serif;font-size:30px;font-weight:400;line-height:1;font-variant-numeric:tabular-nums}
+.measure small{font-family:inherit;font-size:9px;margin-left:3px}
+
+.stage{
+  position:relative;width:100%;height:min(72vw,760px);min-height:580px;overflow:hidden;
+  background:#172a22;isolation:isolate;touch-action:manipulation;
+}
+.stage::before{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.17;
+  background:repeating-linear-gradient(112deg,transparent 0 92px,rgba(231,223,207,.36) 93px 94px);
+}
+#artboard{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+.target{
+  --tone:#ddea7e;position:absolute;z-index:4;width:78px;height:78px;margin:-39px 0 0 -39px;padding:0;
+  border:0;border-radius:50%;background:transparent;cursor:pointer;display:none;
+}
+.target::before{content:"";position:absolute;inset:4px;border:1px solid var(--tone);border-radius:50%;opacity:.55;animation:ring 1.15s ease-out infinite}
+.target::after{content:"";position:absolute;inset:25px;border-radius:50% 42% 54% 46%;background:var(--tone);box-shadow:0 0 22px 9px var(--tone),0 0 56px 20px rgba(221,234,126,.28);animation:breathe 1.4s ease-in-out infinite alternate}
+.target.show{display:block}
+.target:focus-visible{outline:2px solid #fff;outline-offset:3px}
+@keyframes ring{from{transform:scale(.45);opacity:.8}to{transform:scale(1.08);opacity:0}}
+@keyframes breathe{to{transform:rotate(18deg) scale(.78)}}
+
+.overlay{
+  position:absolute;inset:0;z-index:8;display:flex;align-items:center;justify-content:center;padding:30px;
+  color:#f0e9dc;text-align:center;background:radial-gradient(circle at 50% 48%,rgba(68,96,79,.45),rgba(23,42,34,.25) 42%,rgba(23,42,34,.55));
+}
+.overlay[hidden]{display:none}
+.panel{max-width:610px}
+.orb{width:74px;height:74px;margin:0 auto 28px;border:1px solid rgba(240,233,220,.48);border-radius:50%;position:relative;animation:orbit 8s linear infinite}
+.orb::after{content:"";position:absolute;width:14px;height:14px;left:4px;top:5px;border-radius:50%;background:var(--acid);box-shadow:0 0 18px var(--acid)}
+@keyframes orbit{to{transform:rotate(360deg)}}
+.panel .kicker{margin:0 0 13px;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:rgba(240,233,220,.62)}
+.panel h2{margin:0;font-family:Georgia,"Songti SC",serif;font-size:clamp(48px,7vw,92px);line-height:.9;letter-spacing:-.055em;font-weight:400}
+.panel h2 em{font-style:normal;color:var(--acid)}
+.panel .copy{max-width:440px;margin:22px auto 28px;color:rgba(240,233,220,.7);font-size:13px;line-height:1.8}
+.actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.primary,.secondary{
+  min-width:176px;min-height:54px;padding:11px 16px 11px 23px;border-radius:999px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:space-between;gap:24px;font-size:13px;transition:transform .2s ease,background .2s ease;
+}
+.primary{border:0;background:var(--acid);color:var(--ink)}
+.secondary{border:1px solid rgba(240,233,220,.35);background:rgba(255,255,255,.06);color:#f0e9dc}
+.primary i,.secondary i{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;font-style:normal}
+.primary i{background:var(--ink);color:var(--acid)}
+.secondary i{background:rgba(255,255,255,.1)}
+.primary:hover,.secondary:hover{transform:translateY(-2px)}
+.hint{display:block;margin-top:14px;color:rgba(240,233,220,.38);font-size:9px;letter-spacing:.14em;text-transform:uppercase}
+.flash{position:absolute;z-index:6;pointer-events:none;color:#fff;font-family:Georgia,serif;font-size:17px;font-style:italic;animation:score-up .58s ease-out forwards}
+@keyframes score-up{to{transform:translateY(-34px);opacity:0}}
+.stage-note{position:absolute;z-index:3;bottom:26px;color:rgba(240,233,220,.38);font-size:8px;line-height:1.7;letter-spacing:.16em;text-transform:uppercase;pointer-events:none}
+.stage-note.left{left:3vw}.stage-note.right{right:3vw;writing-mode:vertical-rl}
+
+.manifesto{width:min(var(--max),calc(100% - 40px));margin:0 auto;padding:78px 0 90px;display:grid;grid-template-columns:.75fr 1.25fr;gap:8vw}
+.manifesto .label{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.manifesto blockquote{margin:0;font-family:Georgia,"Songti SC",serif;font-size:clamp(30px,4.2vw,62px);line-height:1.13;letter-spacing:-.045em}
+.manifesto blockquote em{color:var(--red);font-weight:400}
+.footer{border-top:1px solid var(--line);width:min(var(--max),calc(100% - 40px));min-height:112px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+
+@media (max-width:760px){
+  .nav{height:68px;width:calc(100% - 28px)}
+  .back{font-size:9px}
+  .masthead{width:calc(100% - 32px);padding:52px 0 42px;display:block}
+  h1{font-size:clamp(64px,22vw,104px)}
+  .intro{margin-top:42px}
+  .scorebar{width:calc(100% - 32px);min-height:84px;grid-template-columns:repeat(3,1fr);gap:10px}
+  .scorebar>p{display:none}
+  .measure strong{font-size:25px}
+  .stage{height:72vh;min-height:540px}
+  .target{width:82px;height:82px;margin:-41px 0 0 -41px}
+  .panel h2{font-size:58px}
+  .stage-note.right{display:none}
+  .manifesto{width:calc(100% - 32px);padding:58px 0 64px;display:block}
+  .manifesto blockquote{margin-top:30px}
+  .footer{width:calc(100% - 32px);min-height:90px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<div class="noise" aria-hidden="true"></div>
+<nav class="nav">
+  <a class="brand" href="index.html" aria-label="返回 Inn Jan 首页"><span class="mark">IJ</span><span>Inn Jan</span></a>
+  <a class="back" href="index.html"><span>←</span> 返回数字展厅</a>
+</nav>
+
+<header class="masthead">
+  <div>
+    <p class="overline">Interactive study · No. 01 / 2026</p>
+    <h1>星尘<em>谱</em></h1>
+  </div>
+  <div class="intro">
+    <p>一场关于手、眼与偶然的微型实验。捕捉游移的光点，让速度、停顿与失误共同生成一幅不可复制的画。</p>
+    <dl><div><dt>Duration</dt><dd>30 sec.</dd></div><div><dt>Medium</dt><dd>Light / Touch</dd></div></dl>
+  </div>
+</header>
+
+<main>
+  <section class="game-shell" aria-label="星尘谱艺术游戏">
+    <div class="scorebar" aria-live="polite">
+      <p>“偶然，是作品的另一位作者。”</p>
+      <div class="measure"><span>Collected</span><strong id="score">000</strong></div>
+      <div class="measure"><span>Rhythm</span><strong id="combo">×0</strong></div>
+      <div class="measure"><span>Remaining</span><strong><b id="time">30</b><small>秒</small></strong></div>
+    </div>
+
+    <div class="stage" id="stage">
+      <canvas id="artboard" aria-label="你的实时生成画作">你的浏览器不支持画布，但仍可使用页面的其他内容。</canvas>
+      <button class="target" id="target" type="button" aria-label="捕捉这束光"></button>
+      <div class="overlay" id="startOverlay">
+        <div class="panel">
+          <div class="orb" aria-hidden="true"></div>
+          <p class="kicker">One moment, one painting</p>
+          <h2>让指尖<br>追上<em>光</em></h2>
+          <p class="copy">点击亮起的光点。连续命中会提高节奏，每一次触碰都会在画布上留下颜色。</p>
+          <div class="actions"><button class="primary" id="startButton" type="button">开始创作 <i>↗</i></button></div>
+          <small class="hint">鼠标、触屏或键盘均可游玩</small>
+        </div>
+      </div>
+      <div class="overlay" id="resultOverlay" hidden>
+        <div class="panel">
+          <p class="kicker">Your study is complete</p>
+          <h2>捕捉了<br><em id="finalScore">0</em> 点光</h2>
+          <p class="copy">画面保存了你这一刻的速度与犹豫。它不会再次以相同的方式出现。</p>
+          <div class="actions">
+            <button class="primary" id="restartButton" type="button">再画一幅 <i>↗</i></button>
+            <button class="secondary" id="saveButton" type="button">保存作品 <i>↓</i></button>
+          </div>
+        </div>
+      </div>
+      <span class="stage-note left">Celestial notation<br>Live composition</span>
+      <span class="stage-note right">Observe · Pursue · Leave a trace</span>
+    </div>
+  </section>
+
+  <section class="manifesto">
+    <span class="label">Artist's note / 01</span>
+    <blockquote>无需获胜。你只需要在光消失以前，<em>留下痕迹。</em></blockquote>
+  </section>
+</main>
+
+<footer class="footer"><span>© 2026 Inn Jan</span><span>yinjinghang.com</span></footer>
+
+<script>
+(function(){
+  "use strict";
+  var GAME_SECONDS=30;
+  var palette=["#ddea7e","#dbb86e","#ed7461","#8dbbb0","#d7cae8","#f0e9dc"];
+  var stage=document.getElementById("stage");
+  var canvas=document.getElementById("artboard");
+  var target=document.getElementById("target");
+  var startOverlay=document.getElementById("startOverlay");
+  var resultOverlay=document.getElementById("resultOverlay");
+  var startButton=document.getElementById("startButton");
+  var restartButton=document.getElementById("restartButton");
+  var saveButton=document.getElementById("saveButton");
+  var scoreNode=document.getElementById("score");
+  var comboNode=document.getElementById("combo");
+  var timeNode=document.getElementById("time");
+  var finalScoreNode=document.getElementById("finalScore");
+  var context=canvas.getContext&&canvas.getContext("2d");
+  var playing=false,score=0,combo=0,timeLeft=GAME_SECONDS,lastHit=0,timer=null;
+  var marks=[],targetX=.66,targetY=.36,targetColor=palette[0];
+
+  function pad(value){return value<10?"00"+value:value<100?"0"+value:String(value)}
+  function updateNumbers(){scoreNode.textContent=pad(score);comboNode.textContent="×"+combo;timeNode.textContent=timeLeft}
+  function random(min,max){return min+Math.random()*(max-min)}
+
+  function resizeCanvas(){
+    if(!context)return;
+    var rect=stage.getBoundingClientRect();
+    var ratio=Math.min(window.devicePixelRatio||1,2);
+    canvas.width=Math.max(1,Math.round(rect.width*ratio));
+    canvas.height=Math.max(1,Math.round(rect.height*ratio));
+    context.setTransform(ratio,0,0,ratio,0,0);
+    redraw(rect.width,rect.height);
+  }
+  function backdrop(width,height){
+    context.globalCompositeOperation="source-over";
+    context.fillStyle="#172a22";context.fillRect(0,0,width,height);
+    var glow=context.createRadialGradient(width*.22,height*.18,0,width*.22,height*.18,width*.62);
+    glow.addColorStop(0,"rgba(84,119,96,.38)");glow.addColorStop(1,"rgba(23,42,34,0)");
+    context.fillStyle=glow;context.fillRect(0,0,width,height);
+    context.strokeStyle="rgba(233,226,213,.075)";context.lineWidth=1;
+    for(var x=-height;x<width+height;x+=94){context.beginPath();context.moveTo(x,0);context.lineTo(x-height*.45,height);context.stroke()}
+  }
+  function ellipse(x,y,rx,ry,rotation,color,alpha){
+    context.save();context.translate(x,y);context.rotate(rotation);context.scale(rx,ry);context.beginPath();context.arc(0,0,1,0,Math.PI*2);context.restore();
+    context.globalAlpha=alpha;context.fillStyle=color;context.fill();context.globalAlpha=1;
+  }
+  function drawMark(mark,width,height){
+    var x=mark.x*width,y=mark.y*height,r=mark.r*Math.min(width,height),color=palette[mark.color];
+    context.globalCompositeOperation="screen";
+    ellipse(x,y,r,r*.22,mark.angle,color,.66);
+    ellipse(x-r*.25,y+r*.1,r*.55,r*.12,mark.angle-.22,color,.26);
+    context.globalAlpha=.56;context.strokeStyle=color;context.lineWidth=Math.max(1,r*.025);context.beginPath();
+    context.moveTo(x-r*.8,y+r*.2);context.quadraticCurveTo(x,y-r*.75,x+r*1.05,y+r*.05);context.stroke();context.globalAlpha=1;
+    for(var i=0;i<4;i++){ellipse(x+Math.cos(mark.angle+i*1.7)*r*random(.6,1.25),y+Math.sin(mark.angle+i*1.3)*r*random(.35,.9),Math.max(2,r*.055),Math.max(2,r*.055),0,color,.75)}
+    context.globalCompositeOperation="source-over";
+  }
+  function redraw(width,height){backdrop(width,height);for(var i=0;i<marks.length;i++)drawMark(marks[i],width,height)}
+
+  function placeTarget(){
+    targetX=random(.14,.86);targetY=random(.17,.84);targetColor=palette[Math.floor(Math.random()*palette.length)];
+    target.style.left=(targetX*100)+"%";target.style.top=(targetY*100)+"%";target.style.setProperty("--tone",targetColor);
+  }
+  function flashPoints(points){
+    var node=document.createElement("span");node.className="flash";node.textContent="+"+points;
+    node.style.left=(targetX*100)+"%";node.style.top=(targetY*100)+"%";stage.appendChild(node);
+    window.setTimeout(function(){if(node.parentNode)node.parentNode.removeChild(node)},650);
+  }
+  function hit(){
+    if(!playing)return;
+    var now=Date.now();combo=now-lastHit<900?combo+1:1;lastHit=now;
+    var points=10+Math.min(combo-1,5)*2;score+=points;
+    marks.push({x:targetX,y:targetY,r:random(.075,.15),angle:random(-1.35,1.35),color:palette.indexOf(targetColor)});
+    var rect=stage.getBoundingClientRect();drawMark(marks[marks.length-1],rect.width,rect.height);flashPoints(points);placeTarget();updateNumbers();
+  }
+  function startGame(){
+    window.clearInterval(timer);playing=true;score=0;combo=0;timeLeft=GAME_SECONDS;lastHit=0;marks=[];
+    startOverlay.hidden=true;resultOverlay.hidden=true;target.className="target show";updateNumbers();resizeCanvas();placeTarget();
+    try{target.focus({preventScroll:true})}catch(error){target.focus()}
+    timer=window.setInterval(function(){timeLeft-=1;updateNumbers();if(timeLeft<=0)finishGame()},1000);
+  }
+  function finishGame(){
+    window.clearInterval(timer);timer=null;playing=false;target.className="target";finalScoreNode.textContent=score;resultOverlay.hidden=false;
+    restartButton.focus();
+  }
+  function saveArt(){
+    if(!context)return;
+    var link=document.createElement("a");link.download="inn-jan-celestial-study.png";link.href=canvas.toDataURL("image/png");
+    document.body.appendChild(link);link.click();document.body.removeChild(link);
+  }
+
+  if(!context){startButton.disabled=true;startButton.textContent="此浏览器不支持画布"}
+  else{resizeCanvas()}
+  target.addEventListener("click",hit);
+  startButton.addEventListener("click",startGame);
+  restartButton.addEventListener("click",startGame);
+  saveButton.addEventListener("click",saveArt);
+  window.addEventListener("resize",function(){window.clearTimeout(window.__ijResize);window.__ijResize=window.setTimeout(resizeCanvas,120)});
+  document.addEventListener("visibilitychange",function(){if(document.hidden&&playing){combo=0;updateNumbers()}});
+})();
+</script>
+</body>
+</html>
